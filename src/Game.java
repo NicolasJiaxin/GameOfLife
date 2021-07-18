@@ -12,37 +12,40 @@ public class Game {
         }
     }
 
-    public void printGrid() {
+    public String toString() {
+        String s = "";
         // Print top border
         for (int i = 0; i < size+2; i++) {
-            System.out.print("*");
+            s += '*';
         }
-        System.out.println();
+        s += '\n';
 
         // Print content of grid
         for (int i = 0; i < size; i++) {
-            System.out.print('*');
+            s += '*';
             for (int j = 0; j < size; j++) {
                 if (grid[i][j].isAlive) {
-                    System.out.print('X');
+                    s += 'o';
                 } else {
-                    System.out.print('-');
+                    s += '-';
                 }
             }
-            System.out.println('*');
+            s += "*\n";
         }
 
         // Print bottom border
         for (int i = 0; i < size+2; i++) {
-            System.out.print("*");
+            s += '*';
         }
-        System.out.println();
+        s += '\n';
+
+        return s;
     }
 
     protected void updateAll() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                grid[i][j].updateCell(this.grid);
+                grid[i][j].updateCell();
             }
         }
     }
@@ -55,7 +58,7 @@ public class Game {
         }
     }
 
-    protected class Cell {
+    public class Cell {
         private final int X;
         private final int Y;
         int neighboursCount = 0;
@@ -88,7 +91,7 @@ public class Game {
                     "Update: " + this.needUpdate + '\n';
         }
 
-        protected void updateCell(Cell[][] grid) {
+        protected void updateCell() {
             // Check if need to change state
             if (needUpdate) {
                 needUpdate = false;

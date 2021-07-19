@@ -1,6 +1,8 @@
 public class Game {
     protected Cell[][] grid;
     protected int size;
+    protected int aliveCellsCount = 0;
+    protected int generationsCount = 0;
 
     Game(int size) {
         this.size = size;
@@ -12,32 +14,51 @@ public class Game {
         }
     }
 
+    public boolean equals(Object o) {
+        if (o instanceof Game) {
+            Game other = (Game) o;
+            boolean equal = true;
+            if (this.size != other.size) { equal = false; }
+            else {
+                for (int i = 0; i < this.size; i++) {
+                    for (int j = 0; i < this.size; j++) {
+                        if (this.grid[i][j] != other.grid[i][j]) {
+                            equal = false;
+                        }
+                    }
+                }
+            }
+            return equal;
+        }
+        return false;
+    }
+
     public String toString() {
-        String s = "";
+        String s = "========= Generation " + generationsCount + " =========\n";
         // Print top border
         for (int i = 0; i < size+2; i++) {
-            s += '*';
+            s += "@ ";
         }
         s += '\n';
 
         // Print content of grid
         for (int i = 0; i < size; i++) {
-            s += '*';
+            s += '@';
             for (int j = 0; j < size; j++) {
                 if (grid[i][j].isAlive) {
-                    s += 'o';
+                    s += " o";
                 } else {
-                    s += '-';
+                    s += " —";
                 }
             }
-            s += "*\n";
+            s += " @\n";
         }
 
         // Print bottom border
         for (int i = 0; i < size+2; i++) {
-            s += '*';
+            s += "@ ";
         }
-        s += '\n';
+        s += "\n\n";
 
         return s;
     }
@@ -57,6 +78,53 @@ public class Game {
             }
         }
     }
+
+    public void switchState(int x, int y) {
+        grid[x][y].needUpdate = true;
+        grid[x][y].updateCell();
+    }
+
+    public void start() {
+        while (aliveCellsCount > 0) {
+            // First, check cells to updated
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    grid[i][j].checkCell();
+                }
+            }
+
+            // Then, update cells
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    grid[i][j].updateCell();
+                }
+            }
+        }
+    }
+
+    public void start(int maxGen) {
+
+        while (aliveCellsCount > 0 && generationsCount <= maxGen) {
+            // First, check cells to updated
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    grid[i][j].checkCell();
+                }
+            }
+
+            // Then, update cells
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    grid[i][j].updateCell();
+                }
+            }
+
+            generationsCount++;
+            System.out.print(this);
+        }
+    }
+
+
 
     public class Cell {
         private final int X;
@@ -84,12 +152,23 @@ public class Game {
             this.needUpdate = needUpdate;
         }
 
+        public boolean equals(Object o) {
+            if (o == this) { return true; }
+            if (!(o instanceof Cell)) { return false; }
+            Cell other = (Cell) o;
+            return  this.X == other.X &&
+                    this.Y == other.Y &&
+                    this.neighboursCount == other.neighboursCount &&
+                    this.isAlive == other.isAlive &&
+                    this.needUpdate == other.needUpdate;
+        }   // equals
+
         public String toString() {
             return  "Position: (" + this.X + "," + this.Y + ")\n" +
                     "Neighbours: " + this.neighboursCount + '\n' +
                     "Alive: " + this.isAlive + '\n' +
                     "Update: " + this.needUpdate + '\n';
-        }
+        }   // toString
 
         protected void updateCell() {
             // Check if need to change state
@@ -98,6 +177,7 @@ public class Game {
                 // Alive cell to dead cell
                 if (isAlive) {
                     isAlive = false;
+                    aliveCellsCount--;
                     // Update neighbouring cells
                     for (int i = X - 1; i <= X + 1; i++) {
                         if (i < 0 || i > grid.length) {
@@ -116,6 +196,7 @@ public class Game {
                 // Otherwise, dead cell to live cell
                 else {
                     isAlive = true;
+                    aliveCellsCount++;
                     // Update neighbouring cells
                     for (int i = X - 1; i <= X + 1; i++) {
                         if (i < 0 || i > grid.length) {
@@ -132,7 +213,7 @@ public class Game {
                     }
                 }
             }
-        }
+        }   // updateCell
 
         protected void checkCell() {
             if (isAlive) {  // Alive cell
@@ -143,7 +224,8 @@ public class Game {
             else if (neighboursCount == 3) {    // Dead cell
                 needUpdate = true;
             }
-        }
-    }
+        }   // checkCell
 
-}
+    }   // Cell
+
+}   // Game

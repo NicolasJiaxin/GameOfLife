@@ -27,6 +27,25 @@ class CellToStringTest implements Runnable {
     }
 }
 
+class CellEqualTest implements Runnable {
+    @Override
+    public void run() {
+        Game game = new Game(3);
+        Game.Cell c1 = game.new Cell(0,0,5,false,true);
+        Game.Cell c2 = game.new Cell(0,0,5,false,true);
+        Game.Cell c3= game.new Cell(2,0,5,false,true);
+
+        boolean b1 = c1.equals(c2);
+        boolean b2 = c2.equals(c1);
+        boolean b3 = !c1.equals(c3);
+        boolean b4 = !c2.equals(c3);
+        boolean b5 = c1.equals(c1);
+        if (!(b1 && b2 && b3 && b4 && b5)) {
+            throw new AssertionError("Equals method does not work. Got: " + b1 + ", " + b2 + ", " + b3 + ", " + b4 + ", " + b5 + ".\n");
+        }
+    }
+}
+
 class GridToStringTest implements Runnable {
     @Override
     public void run() {
@@ -36,10 +55,10 @@ class GridToStringTest implements Runnable {
         game.grid[2][0] = game.new Cell(2,0,true);
         game.grid[2][2] = game.new Cell(2,2,true);
 
-        boolean string = game.toString().equals("*****\n*o--*\n*-o-*\n*o-o*\n*****\n");
+        boolean string = game.toString().equals("*****\n*o--*\n*-o-*\n*o-o*\n*****\n\n");
         if (!string) {
             throw new AssertionError("Grid toString does not work.\nGot:\n" + game.toString() +
-                    "Expected:\n*****\n*o--*\n*-o-*\n*o-o*\n*****\n");
+                    "Expected:\n*****\n*o--*\n*-o-*\n*o-o*\n*****\n\n");
         }
     }
 }
@@ -48,12 +67,13 @@ class GridToStringTest implements Runnable {
 public class Tester {
     static String[] tests = {
             "CellToStringTest",
+            "CellEqualTest",
             "GridToStringTest"
     };
     public static void main(String[] args) {
         int numPassed = 0;
         for (String test : tests) {
-            System.out.println("====== " + test + " ======\n");
+            System.out.println("\n====== " + test + " ======\n");
             try {
                 Runnable testCase = (Runnable) Class.forName(test).getDeclaredConstructor().newInstance();
                 testCase.run();

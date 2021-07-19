@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit;
+
 public class Game {
     protected Cell[][] grid;
     protected int size;
@@ -18,11 +20,12 @@ public class Game {
         if (o instanceof Game) {
             Game other = (Game) o;
             boolean equal = true;
-            if (this.size != other.size) { equal = false; }
+            if (this.size != other.size) { return false; }
+            if (this.aliveCellsCount != other.aliveCellsCount) { return false; }
             else {
                 for (int i = 0; i < this.size; i++) {
-                    for (int j = 0; i < this.size; j++) {
-                        if (this.grid[i][j] != other.grid[i][j]) {
+                    for (int j = 0; j < this.size; j++) {
+                        if ( !(this.grid[i][j].equals(other.grid[i][j])) ) {
                             equal = false;
                         }
                     }
@@ -85,7 +88,15 @@ public class Game {
     }
 
     public void start() {
+        System.out.print(this);
+        generationsCount++;
         while (aliveCellsCount > 0) {
+            try {
+            TimeUnit.SECONDS.sleep(1);
+            }
+            catch (InterruptedException e) {
+                System.out.println(e);
+            }
             // First, check cells to updated
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
@@ -99,12 +110,22 @@ public class Game {
                     grid[i][j].updateCell();
                 }
             }
+
+            System.out.print(this);
+            generationsCount++;
         }
     }
 
     public void start(int maxGen) {
-
+        System.out.print(this);
+        generationsCount++;
         while (aliveCellsCount > 0 && generationsCount <= maxGen) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch (InterruptedException e) {
+                System.out.println(e);
+            }
             // First, check cells to updated
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
@@ -119,8 +140,8 @@ public class Game {
                 }
             }
 
-            generationsCount++;
             System.out.print(this);
+            generationsCount++;
         }
     }
 
@@ -180,13 +201,10 @@ public class Game {
                     aliveCellsCount--;
                     // Update neighbouring cells
                     for (int i = X - 1; i <= X + 1; i++) {
-                        if (i < 0 || i > grid.length) {
-                            continue;
-                        } // Skip if outside border
+                        if (i < 0 || i > size - 1) { continue; } // Skip if outside border
                         for (int j = Y - 1; j <= Y + 1; j++) {
-                            if (j < -0 || j > grid.length) {
-                                continue;
-                            }   // Skip if outside border
+                            if (j < -0 || j > size - 1 ) { continue; }   // Skip if outside border
+                            else if (i == this.X && j == this.Y) { continue; }  // Skip if current cell
                             else {
                                 grid[i][j].neighboursCount--;
                             }
@@ -199,13 +217,10 @@ public class Game {
                     aliveCellsCount++;
                     // Update neighbouring cells
                     for (int i = X - 1; i <= X + 1; i++) {
-                        if (i < 0 || i > grid.length) {
-                            continue;
-                        } // Skip if outside border
+                        if (i < 0 || i > size - 1) { continue; } // Skip if outside border
                         for (int j = Y - 1; j <= Y + 1; j++) {
-                            if (j < -0 || j > grid.length) {
-                                continue;
-                            }   // Skip if outside border
+                            if (j < -0 || j > size - 1) { continue; }   // Skip if outside border
+                            else if (i == this.X && j == this.Y) { continue; }  // Skip if current cell
                             else {
                                 grid[i][j].neighboursCount++;
                             }

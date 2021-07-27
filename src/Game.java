@@ -100,7 +100,6 @@ public class Game {
             }
             doOneGen();
             System.out.print(this);
-            generationsCount++;
         }
     }
 
@@ -116,7 +115,6 @@ public class Game {
             }
             doOneGen();
             System.out.print(this);
-            generationsCount++;
         }
     }
 
@@ -134,6 +132,7 @@ public class Game {
                 grid[i][j].updateCell();
             }
         }
+        generationsCount++;
     }
 
 

@@ -5,6 +5,7 @@ public class Game {
     protected int size;
     protected int aliveCellsCount = 0;
     protected int generationsCount = 0;
+    public int delayMilli = 500;
 
     Game(int size) {
         this.size = size;
@@ -92,25 +93,12 @@ public class Game {
         generationsCount++;
         while (aliveCellsCount > 0) {
             try {
-            TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(delayMilli);
             }
             catch (InterruptedException e) {
                 System.out.println(e);
             }
-            // First, check cells to updated
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    grid[i][j].checkCell();
-                }
-            }
-
-            // Then, update cells
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    grid[i][j].updateCell();
-                }
-            }
-
+            doOneGen();
             System.out.print(this);
             generationsCount++;
         }
@@ -121,27 +109,30 @@ public class Game {
         generationsCount++;
         while (aliveCellsCount > 0 && generationsCount <= maxGen) {
             try {
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(delayMilli);
             }
             catch (InterruptedException e) {
                 System.out.println(e);
             }
-            // First, check cells to updated
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    grid[i][j].checkCell();
-                }
-            }
-
-            // Then, update cells
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    grid[i][j].updateCell();
-                }
-            }
-
+            doOneGen();
             System.out.print(this);
             generationsCount++;
+        }
+    }
+
+    public void doOneGen() {
+        // First, check cells to updated
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                grid[i][j].checkCell();
+            }
+        }
+
+        // Then, update cells
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                grid[i][j].updateCell();
+            }
         }
     }
 

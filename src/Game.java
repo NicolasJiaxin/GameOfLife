@@ -67,22 +67,6 @@ public class Game {
         return s;
     }
 
-    protected void updateAll() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                grid[i][j].updateCell();
-            }
-        }
-    }
-
-    protected void checkAll() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                grid[i][j].checkCell();
-            }
-        }
-    }
-
     public void switchState(int x, int y) {
         grid[x][y].needUpdate = true;
         grid[x][y].updateCell();

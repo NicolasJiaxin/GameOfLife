@@ -102,7 +102,11 @@ class checkAllTest implements Runnable {
         game.switchState(0,2);
         game.switchState(1,2);
         game.switchState(2,2);
-        game.checkAll();
+        for (int i = 0; i < game.size; i++) {
+            for (int j = 0; j < game.size; j++) {
+                game.grid[i][j].checkCell();
+            }
+        }
 
         Game expected = new Game(3);
         expected.switchState(0,2);

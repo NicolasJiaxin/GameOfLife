@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class Game {
@@ -5,6 +6,7 @@ public class Game {
     protected int size;
     protected int aliveCellsCount = 0;
     protected int generationsCount = 0;
+    protected ArrayList<Cell> needUpdateCells = new ArrayList<>(10);
     public int delayMilli = 500;
 
     Game(int size) {
@@ -72,6 +74,22 @@ public class Game {
         grid[x][y].updateCell();
     }
 
+    protected void checkAll() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                grid[i][j].checkCell();
+            }
+        }
+    }
+
+    protected void updateAll() {
+        for (Cell cell : needUpdateCells) {
+            cell.updateCell();
+        }
+        // Remove all cells from list
+        needUpdateCells.clear();
+    }
+
     public void start() {
         System.out.print(this);
         generationsCount++;
@@ -104,18 +122,9 @@ public class Game {
 
     public void doOneGen() {
         // First, check cells to updated
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                grid[i][j].checkCell();
-            }
-        }
-
+        checkAll();
         // Then, update cells
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                grid[i][j].updateCell();
-            }
-        }
+        updateAll();
         generationsCount++;
     }
 
@@ -208,10 +217,14 @@ public class Game {
             if (isAlive) {  // Alive cell
                 if (neighboursCount < 2 || neighboursCount > 3) {
                     needUpdate = true;
+                    // Add to list of cells to update
+                    needUpdateCells.add(this);
                 }
             }
             else if (neighboursCount == 3) {    // Dead cell
                 needUpdate = true;
+                // Add to list of cells to update
+                needUpdateCells.add(this);
             }
         }   // checkCell
 

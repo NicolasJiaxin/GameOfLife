@@ -2,17 +2,15 @@ class CellToStringTest implements Runnable {
     @Override
     public void run() {
         Game game = new Game(3);
-        Game.Cell c1 = game.new Cell(0,0,0,true,false);
-        Game.Cell c2 = game.new Cell(2,3,3,false,true);
+        Game.Cell c1 = game.new Cell(0,0,0,true);
+        Game.Cell c2 = game.new Cell(2,3,3,false);
 
         String expected1 = "Position: (0,0)\n" +
                             "Neighbours: 0\n" +
-                            "Alive: true\n" +
-                            "Update: false\n";
+                            "Alive: true\n";
         String expected2 =  "Position: (2,3)\n"+
                             "Neighbours: 3\n" +
-                            "Alive: false\n" +
-                            "Update: true\n";
+                            "Alive: false\n";
         boolean string1 = c1.toString().equals(expected1);
         boolean string2 = c2.toString().equals(expected2);
         if (!string1 || !string2) {
@@ -27,9 +25,9 @@ class CellEqualTest implements Runnable {
     @Override
     public void run() {
         Game game = new Game(3);
-        Game.Cell c1 = game.new Cell(0,0,5,false,true);
-        Game.Cell c2 = game.new Cell(0,0,5,false,true);
-        Game.Cell c3= game.new Cell(2,0,5,false,true);
+        Game.Cell c1 = game.new Cell(0,0,5,false);
+        Game.Cell c2 = game.new Cell(0,0,5,false);
+        Game.Cell c3= game.new Cell(2,0,5,false);
 
         boolean b1 = c1.equals(c2);
         boolean b2 = c2.equals(c1);
@@ -104,14 +102,7 @@ class checkAllTest implements Runnable {
         game.switchState(2,2);
         game.checkAll();
 
-        Game expected = new Game(3);
-        expected.switchState(0,2);
-        expected.switchState(1,2);
-        expected.switchState(2,2);
-        expected.grid[0][2].needUpdate = true;
-        expected.grid[1][1].needUpdate = true;
-        expected.grid[2][2].needUpdate = true;
-        boolean equal = game.equals(expected);
+        boolean equal = game.needUpdateCells.size() == 3;
 
         if (!equal) {
             throw new AssertionError("Got wrong result.");

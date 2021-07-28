@@ -70,7 +70,6 @@ public class Game {
     }
 
     public void switchState(int x, int y) {
-        grid[x][y].needUpdate = true;
         grid[x][y].updateCell();
     }
 
@@ -135,7 +134,6 @@ public class Game {
         private final int Y;
         int neighboursCount = 0;
         protected boolean isAlive = false;
-        protected boolean needUpdate = false;
 
         Cell(int x, int y) {
             this.X = x;
@@ -148,12 +146,12 @@ public class Game {
             this.isAlive = isAlive;
         }
 
-        Cell(int x, int y, int neighboursCount, boolean isAlive, boolean needUpdate) {
+        Cell(int x, int y, int neighboursCount, boolean isAlive) {
             this.X = x;
             this.Y = y;
             this.neighboursCount = neighboursCount;
             this.isAlive = isAlive;
-            this.needUpdate = needUpdate;
+
         }
 
         public boolean equals(Object o) {
@@ -163,50 +161,46 @@ public class Game {
             return  this.X == other.X &&
                     this.Y == other.Y &&
                     this.neighboursCount == other.neighboursCount &&
-                    this.isAlive == other.isAlive &&
-                    this.needUpdate == other.needUpdate;
+                    this.isAlive == other.isAlive;
         }   // equals
 
         public String toString() {
             return  "Position: (" + this.X + "," + this.Y + ")\n" +
                     "Neighbours: " + this.neighboursCount + '\n' +
-                    "Alive: " + this.isAlive + '\n' +
-                    "Update: " + this.needUpdate + '\n';
+                    "Alive: " + this.isAlive + '\n';
         }   // toString
 
         protected void updateCell() {
-            // Check if need to change state
-            if (needUpdate) {
-                needUpdate = false;
-                // Alive cell to dead cell
-                if (isAlive) {
-                    isAlive = false;
-                    aliveCellsCount--;
-                    // Update neighbouring cells
-                    for (int i = X - 1; i <= X + 1; i++) {
-                        if (i < 0 || i > size - 1) { continue; } // Skip if outside border
-                        for (int j = Y - 1; j <= Y + 1; j++) {
-                            if (j < -0 || j > size - 1 ) { continue; }   // Skip if outside border
-                            else if (i == this.X && j == this.Y) { continue; }  // Skip if current cell
-                            else {
-                                grid[i][j].neighboursCount--;
-                            }
+            // Alive cell to dead cell
+            if (isAlive) {
+                isAlive = false;
+                aliveCellsCount--;
+                // Update neighbouring cells
+                for (int i = X - 1; i <= X + 1; i++) {
+                    if (i < 0 || i > size - 1) {
+                        continue;
+                    } // Skip if outside border
+                    for (int j = Y - 1; j <= Y + 1; j++) {
+                        if (j < -0 || j > size - 1) { continue; }   // Skip if outside border
+                        else if (i == this.X && j == this.Y) { continue; }  // Skip if current cell
+                        else {
+                            grid[i][j].neighboursCount--;
                         }
                     }
                 }
-                // Otherwise, dead cell to live cell
-                else {
-                    isAlive = true;
-                    aliveCellsCount++;
-                    // Update neighbouring cells
-                    for (int i = X - 1; i <= X + 1; i++) {
-                        if (i < 0 || i > size - 1) { continue; } // Skip if outside border
-                        for (int j = Y - 1; j <= Y + 1; j++) {
-                            if (j < -0 || j > size - 1) { continue; }   // Skip if outside border
-                            else if (i == this.X && j == this.Y) { continue; }  // Skip if current cell
-                            else {
-                                grid[i][j].neighboursCount++;
-                            }
+            }
+            // Otherwise, dead cell to alive cell
+            else {
+                isAlive = true;
+                aliveCellsCount++;
+                // Update neighbouring cells
+                for (int i = X - 1; i <= X + 1; i++) {
+                    if (i < 0 || i > size - 1) { continue; } // Skip if outside border
+                    for (int j = Y - 1; j <= Y + 1; j++) {
+                        if (j < -0 || j > size - 1) { continue; }   // Skip if outside border
+                        else if (i == this.X && j == this.Y) { continue; }  // Skip if current cell
+                        else {
+                            grid[i][j].neighboursCount++;
                         }
                     }
                 }
@@ -216,13 +210,11 @@ public class Game {
         protected void checkCell() {
             if (isAlive) {  // Alive cell
                 if (neighboursCount < 2 || neighboursCount > 3) {
-                    needUpdate = true;
                     // Add to list of cells to update
                     needUpdateCells.add(this);
                 }
             }
             else if (neighboursCount == 3) {    // Dead cell
-                needUpdate = true;
                 // Add to list of cells to update
                 needUpdateCells.add(this);
             }

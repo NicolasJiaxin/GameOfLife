@@ -18,7 +18,6 @@ public class GUI {
         game.switchState(2,1);
         game.switchState(1,0);
 
-        System.out.print(game);
         while (game.generationsCount < 31) {
             updateBoard();
             try {
